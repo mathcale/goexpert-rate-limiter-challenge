@@ -12,7 +12,11 @@ func main() {
 	}
 
 	di := dependencyinjector.NewDependencyInjector(configs)
-	deps := di.Inject()
+
+	deps, err := di.Inject()
+	if err != nil {
+		panic(err)
+	}
 
 	deps.WebServer.Start()
 }

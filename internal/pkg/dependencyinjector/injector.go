@@ -2,6 +2,7 @@ package dependencyinjector
 
 import (
 	"github.com/mathcale/goexpert-rate-limiter-challenge/config"
+	ratelimiter_datastore "github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/database/ratelimiter"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/handlers"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/middlewares"
@@ -11,7 +12,7 @@ import (
 )
 
 type DependencyInjectorInterface interface {
-	Inject() *Dependencies
+	Inject() (*Dependencies, error)
 }
 
 type DependencyInjector struct {
@@ -31,12 +32,23 @@ func NewDependencyInjector(c *config.Conf) *DependencyInjector {
 	}
 }
 
-func (di *DependencyInjector) Inject() *Dependencies {
+func (di *DependencyInjector) Inject() (*Dependencies, error) {
 	logger := logger.NewLogger(di.Config.LogLevel)
 	responseHandler := responsehandler.NewWebResponseHandler()
 
+	rateLimiterDatastoreFactory := ratelimiter_datastore.NewRateLimiterDatastoreFactory(
+		*di.Config,
+		logger.GetLogger(),
+	)
+
+	datastore, err := rateLimiterDatastoreFactory.Create()
+	if err != nil {
+		return nil, err
+	}
+
 	limiter := ratelimiter.NewRateLimiter(
 		logger,
+		datastore,
 		di.Config.RateLimiterIPMaxRequests,
 		di.Config.RateLimiterTokenMaxRequests,
 		di.Config.RateLimiterTimeWindowMilliseconds,
@@ -59,5 +71,5 @@ func (di *DependencyInjector) Inject() *Dependencies {
 		ResponseHandler: responseHandler,
 		HelloWebHandler: helloWebHandler,
 		WebServer:       webServer,
-	}
+	}, nil
 }
