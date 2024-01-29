@@ -13,7 +13,7 @@ type Conf struct {
 	RateLimiterCooldownTimeMilliseconds int    `mapstructure:"RATE_LIMITER_COOLDOWN_TIME_MILISECONDS"`
 }
 
-func LoadConfig(path string) (*Conf, error) {
+func Load(path string) (*Conf, error) {
 	var c *Conf
 
 	viper.SetConfigName("app_config")
