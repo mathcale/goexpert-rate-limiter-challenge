@@ -1,7 +1,7 @@
 include .env
 
 build:
-	@go build -o ./bin/api ./cmd/api/main.go
+	@go build -ldflags="-w -s" -o ./bin/api ./cmd/api/main.go
 
 run:
 	@air -c .air.toml
@@ -14,3 +14,6 @@ install-deps:
 	go mod tidy
 
 setup: install-deps
+
+clean:
+	rm -rf ./bin ./tmp ./coverage.txt
