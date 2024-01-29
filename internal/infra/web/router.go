@@ -1,18 +1,26 @@
 package web
 
-import "github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/handlers"
+import (
+	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/handlers"
+	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/middlewares"
+)
 
 type WebRouterInterface interface {
 	Build() []RouteHandler
 }
 
 type WebRouter struct {
-	WebClimateHandler handlers.HelloWebHandlerInterface
+	HelloWebHandler       handlers.HelloWebHandlerInterface
+	RateLimiterMiddleware middlewares.RateLimiterMiddlewareInterface
 }
 
-func NewWebRouter(webClimateHandler handlers.HelloWebHandlerInterface) *WebRouter {
+func NewWebRouter(
+	helloWebHandler handlers.HelloWebHandlerInterface,
+	rateLimiterMiddleware middlewares.RateLimiterMiddlewareInterface,
+) *WebRouter {
 	return &WebRouter{
-		WebClimateHandler: webClimateHandler,
+		HelloWebHandler:       helloWebHandler,
+		RateLimiterMiddleware: rateLimiterMiddleware,
 	}
 }
 
@@ -21,7 +29,16 @@ func (wr *WebRouter) Build() []RouteHandler {
 		{
 			Path:        "/",
 			Method:      "GET",
-			HandlerFunc: wr.WebClimateHandler.SayHello,
+			HandlerFunc: wr.HelloWebHandler.SayHello,
+		},
+	}
+}
+
+func (wr *WebRouter) BuildMiddlewares() []Middleware {
+	return []Middleware{
+		{
+			Name:    "RateLimiter",
+			Handler: wr.RateLimiterMiddleware.Handle,
 		},
 	}
 }

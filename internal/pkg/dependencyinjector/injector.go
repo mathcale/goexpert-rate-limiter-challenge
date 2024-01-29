@@ -4,7 +4,9 @@ import (
 	"github.com/mathcale/goexpert-rate-limiter-challenge/config"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/handlers"
+	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/middlewares"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/logger"
+	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/responsehandler"
 )
 
@@ -33,10 +35,24 @@ func (di *DependencyInjector) Inject() *Dependencies {
 	logger := logger.NewLogger(di.Config.LogLevel)
 	responseHandler := responsehandler.NewWebResponseHandler()
 
-	helloWebHandler := handlers.NewHelloWebHandler(responseHandler)
+	limiter := ratelimiter.NewRateLimiter(
+		logger,
+		di.Config.RateLimiterIPMaxRequests,
+		di.Config.RateLimiterTokenMaxRequests,
+		di.Config.RateLimiterTimeWindowMilliseconds,
+		di.Config.RateLimiterCooldownTimeMilliseconds,
+	)
 
-	webRouter := web.NewWebRouter(helloWebHandler)
-	webServer := web.NewWebServer(di.Config.WebServerPort, logger.GetLogger(), webRouter.Build())
+	helloWebHandler := handlers.NewHelloWebHandler(responseHandler)
+	rateLimiterMiddleware := middlewares.NewRateLimiterMiddleware(logger, limiter)
+
+	webRouter := web.NewWebRouter(helloWebHandler, rateLimiterMiddleware)
+	webServer := web.NewWebServer(
+		di.Config.WebServerPort,
+		logger.GetLogger(),
+		webRouter.Build(),
+		webRouter.BuildMiddlewares(),
+	)
 
 	return &Dependencies{
 		Logger:          logger,
