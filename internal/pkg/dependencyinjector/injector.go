@@ -2,12 +2,13 @@ package dependencyinjector
 
 import (
 	"github.com/mathcale/goexpert-rate-limiter-challenge/config"
-	ratelimiter_datastore "github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/database/ratelimiter"
+	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/database"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/handlers"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web/middlewares"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/logger"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter"
+	ratelimiter_strategies "github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter/strategies"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/responsehandler"
 )
 
@@ -20,10 +21,14 @@ type DependencyInjector struct {
 }
 
 type Dependencies struct {
-	Logger          logger.LoggerInterface
-	ResponseHandler responsehandler.WebResponseHandlerInterface
-	HelloWebHandler handlers.HelloWebHandlerInterface
-	WebServer       web.WebServerInterface
+	Logger                logger.LoggerInterface
+	ResponseHandler       responsehandler.WebResponseHandlerInterface
+	HelloWebHandler       handlers.HelloWebHandlerInterface
+	RateLimiterMiddleware middlewares.RateLimiterMiddlewareInterface
+	WebServer             web.WebServerInterface
+	RedisDatabase         database.RedisDatabaseInterface
+	RateLimiter           ratelimiter.RateLimiterInterface
+	RedisLimiterStrategy  ratelimiter_strategies.LimiterStrategyInterface
 }
 
 func NewDependencyInjector(c *config.Conf) *DependencyInjector {
@@ -36,27 +41,23 @@ func (di *DependencyInjector) Inject() (*Dependencies, error) {
 	logger := logger.NewLogger(di.Config.LogLevel)
 	responseHandler := responsehandler.NewWebResponseHandler()
 
-	rateLimiterDatastoreFactory := ratelimiter_datastore.NewRateLimiterDatastoreFactory(
-		*di.Config,
-		logger.GetLogger(),
-	)
-
-	datastore, err := rateLimiterDatastoreFactory.Create()
+	redisDB, err := database.NewRedisDatabase(*di.Config, logger.GetLogger())
 	if err != nil {
 		return nil, err
 	}
 
+	redisLimiterStrategy := ratelimiter_strategies.NewRedisLimiterStrategy(redisDB.Client, logger.GetLogger())
+
 	limiter := ratelimiter.NewRateLimiter(
 		logger,
-		datastore,
+		redisLimiterStrategy,
 		di.Config.RateLimiterIPMaxRequests,
 		di.Config.RateLimiterTokenMaxRequests,
 		di.Config.RateLimiterTimeWindowMilliseconds,
-		di.Config.RateLimiterCooldownTimeMilliseconds,
 	)
 
 	helloWebHandler := handlers.NewHelloWebHandler(responseHandler)
-	rateLimiterMiddleware := middlewares.NewRateLimiterMiddleware(logger, limiter)
+	rateLimiterMiddleware := middlewares.NewRateLimiterMiddleware(logger, responseHandler, limiter)
 
 	webRouter := web.NewWebRouter(helloWebHandler, rateLimiterMiddleware)
 	webServer := web.NewWebServer(
@@ -67,9 +68,13 @@ func (di *DependencyInjector) Inject() (*Dependencies, error) {
 	)
 
 	return &Dependencies{
-		Logger:          logger,
-		ResponseHandler: responseHandler,
-		HelloWebHandler: helloWebHandler,
-		WebServer:       webServer,
+		Logger:                logger,
+		ResponseHandler:       responseHandler,
+		HelloWebHandler:       helloWebHandler,
+		RateLimiterMiddleware: rateLimiterMiddleware,
+		WebServer:             webServer,
+		RedisDatabase:         redisDB,
+		RateLimiter:           limiter,
+		RedisLimiterStrategy:  redisLimiterStrategy,
 	}, nil
 }

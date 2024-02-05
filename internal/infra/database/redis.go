@@ -1,4 +1,4 @@
-package ratelimiter
+package database
 
 import (
 	"context"
@@ -10,15 +10,16 @@ import (
 	"github.com/mathcale/goexpert-rate-limiter-challenge/config"
 )
 
-type RateLimiterDatastoreInterface interface {
-	Name() string
-	Get(key string) (int64, error)
+type RedisDatabaseInterface interface{}
+
+type RedisDatabase struct {
+	Client *redis.Client
 }
 
-func NewRedisRateLimiterDatastore(
+func NewRedisDatabase(
 	cfg config.Conf,
 	logger zerolog.Logger,
-) (RateLimiterDatastoreInterface, error) {
+) (*RedisDatabase, error) {
 	addr := fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort)
 
 	logger.Debug().Msgf("Connecting to Redis on [%s]", addr)
@@ -35,7 +36,7 @@ func NewRedisRateLimiterDatastore(
 
 	logger.Debug().Msgf("Redis successfully connected")
 
-	return &RedisRateLimiterDatastore{
+	return &RedisDatabase{
 		Client: client,
 	}, nil
 }

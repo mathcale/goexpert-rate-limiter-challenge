@@ -1,11 +1,16 @@
 package middlewares
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
+
+	"github.com/rs/zerolog"
 
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/logger"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter"
-	"github.com/rs/zerolog"
+	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter/strategies"
+	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/responsehandler"
 )
 
 type RateLimiterMiddlewareInterface interface {
@@ -13,24 +18,53 @@ type RateLimiterMiddlewareInterface interface {
 }
 
 type RateLimiterMiddleware struct {
-	Logger  zerolog.Logger
-	Limiter ratelimiter.RateLimiterInterface
+	Logger          zerolog.Logger
+	ResponseHandler responsehandler.WebResponseHandlerInterface
+	Limiter         ratelimiter.RateLimiterInterface
 }
 
 func NewRateLimiterMiddleware(
 	logger logger.LoggerInterface,
+	responseHandler responsehandler.WebResponseHandlerInterface,
 	limiter ratelimiter.RateLimiterInterface,
 ) *RateLimiterMiddleware {
 	return &RateLimiterMiddleware{
-		Logger:  logger.GetLogger(),
-		Limiter: limiter,
+		Logger:          logger.GetLogger(),
+		ResponseHandler: responseHandler,
+		Limiter:         limiter,
 	}
 }
 
 func (rlm *RateLimiterMiddleware) Handle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rlm.Logger.Info().Msg("Hello from RateLimiterMiddleware")
+		result, err := rlm.Limiter.Check(r.Context(), r)
+		if err != nil {
+			rlm.Logger.Error().Err(err).Msg("Rrror while checking rate limit")
+
+			rlm.ResponseHandler.RespondWithError(
+				w,
+				http.StatusInternalServerError,
+				errors.Join(errors.New("error while checking rate limit"), err),
+			)
+
+			return
+		}
+
+		writeHeaders(w, result)
+
+		rlm.Logger.Debug().Msgf("Rate limit result: %+v", result)
+
+		if result.Result == strategies.Deny {
+			rlm.ResponseHandler.RespondWithError(w, http.StatusTooManyRequests, errors.New("rate limit exceeded"))
+			return
+		}
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func writeHeaders(w http.ResponseWriter, res *strategies.RateLimiterResult) {
+	w.Header().Set("X-RateLimit-Limit", strconv.FormatInt(res.Limit, 10))
+	w.Header().Set("X-RateLimit-Remaining", strconv.FormatInt(res.Remaining, 10))
+	w.Header().Set("X-RateLimit-Reset", strconv.FormatInt(res.ExpiresAt.Unix(), 10))
 }
