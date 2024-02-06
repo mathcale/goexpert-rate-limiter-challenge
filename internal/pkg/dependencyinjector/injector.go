@@ -1,6 +1,8 @@
 package dependencyinjector
 
 import (
+	"time"
+
 	"github.com/mathcale/goexpert-rate-limiter-challenge/config"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/database"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/infra/web"
@@ -46,7 +48,11 @@ func (di *DependencyInjector) Inject() (*Dependencies, error) {
 		return nil, err
 	}
 
-	redisLimiterStrategy := ratelimiter_strategies.NewRedisLimiterStrategy(redisDB.Client, logger.GetLogger())
+	redisLimiterStrategy := ratelimiter_strategies.NewRedisLimiterStrategy(
+		redisDB.Client,
+		logger.GetLogger(),
+		time.Now,
+	)
 
 	limiter := ratelimiter.NewRateLimiter(
 		logger,

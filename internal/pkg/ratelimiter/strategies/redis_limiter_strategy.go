@@ -21,12 +21,18 @@ const (
 type RedisLimiterStrategy struct {
 	Client *redis.Client
 	Logger zerolog.Logger
+	Now    func() time.Time
 }
 
-func NewRedisLimiterStrategy(client *redis.Client, logger zerolog.Logger) *RedisLimiterStrategy {
+func NewRedisLimiterStrategy(
+	client *redis.Client,
+	logger zerolog.Logger,
+	now func() time.Time,
+) *RedisLimiterStrategy {
 	return &RedisLimiterStrategy{
 		Client: client,
 		Logger: logger,
+		Now:    now,
 	}
 }
 
@@ -53,16 +59,12 @@ func (rls *RedisLimiterStrategy) Check(ctx context.Context, r *RateLimiterReques
 	}
 
 	currentCount, err := getResult.Int64()
-	if err != nil {
-		if !errors.Is(err, redis.Nil) {
-			return nil, err
-		}
-
+	if err != nil && errors.Is(err, redis.Nil) {
 		// Fail-safe in case there's an error while getting the count
 		currentCount = 0
 	}
 
-	var expiresAt time.Time = time.Now().Add(ttlDuration)
+	expiresAt := rls.Now().Add(ttlDuration)
 
 	if currentCount >= r.Limit {
 		return &RateLimiterResult{
