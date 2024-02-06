@@ -4,6 +4,7 @@ go 1.21.6
 
 require (
 	github.com/go-chi/chi/v5 v5.0.11
+	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/ironstar-io/chizerolog v0.0.0-20190729084312-7eaca6bf60e6
 	github.com/redis/go-redis/v9 v9.4.0
 	github.com/rs/zerolog v1.31.0
