@@ -9,7 +9,7 @@ import (
 
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/logger"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter"
-	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter/strategies"
+	limiter "github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/ratelimiter/strategies"
 	"github.com/mathcale/goexpert-rate-limiter-challenge/internal/pkg/responsehandler"
 )
 
@@ -54,7 +54,7 @@ func (rlm *RateLimiterMiddleware) Handle(next http.Handler) http.Handler {
 
 		rlm.Logger.Debug().Msgf("Rate limit result: %+v", result)
 
-		if result.Result == strategies.Deny {
+		if result.Result == limiter.Deny {
 			rlm.ResponseHandler.RespondWithError(w, http.StatusTooManyRequests, errors.New("rate limit exceeded"))
 			return
 		}
@@ -63,7 +63,7 @@ func (rlm *RateLimiterMiddleware) Handle(next http.Handler) http.Handler {
 	})
 }
 
-func writeHeaders(w http.ResponseWriter, res *strategies.RateLimiterResult) {
+func writeHeaders(w http.ResponseWriter, res *limiter.RateLimiterResult) {
 	w.Header().Set("X-RateLimit-Limit", strconv.FormatInt(res.Limit, 10))
 	w.Header().Set("X-RateLimit-Remaining", strconv.FormatInt(res.Remaining, 10))
 	w.Header().Set("X-RateLimit-Reset", strconv.FormatInt(res.ExpiresAt.Unix(), 10))
