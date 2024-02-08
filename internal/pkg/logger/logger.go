@@ -6,8 +6,6 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	gorm_zerolog "github.com/wei840222/gorm-zerolog"
-	gormlogger "gorm.io/gorm/logger"
 )
 
 type Logger struct {
@@ -16,7 +14,6 @@ type Logger struct {
 
 type LoggerInterface interface {
 	GetLogger() zerolog.Logger
-	GetDatabaseLogger() gormlogger.Interface
 }
 
 func NewLogger(level string) *Logger {
@@ -38,10 +35,6 @@ func setup(level string) {
 
 func (l *Logger) GetLogger() zerolog.Logger {
 	return log.Logger
-}
-
-func (l *Logger) GetDatabaseLogger() gormlogger.Interface {
-	return gorm_zerolog.New()
 }
 
 func getLevel(level string) zerolog.Level {
