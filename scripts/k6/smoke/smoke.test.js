@@ -13,9 +13,9 @@ export const options = {
 };
 
 export default function () {
-  http.get('http://localhost:8080');
+  http.get('http://rate-limiter_api:8080');
 
-  http.get('http://localhost:8080', {
+  http.get('http://rate-limiter_api:8080', {
     headers: {
       'API_KEY': 'any-api-key'
     }

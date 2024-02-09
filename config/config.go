@@ -4,7 +4,7 @@ import "github.com/spf13/viper"
 
 type Conf struct {
 	LogLevel                          string `mapstructure:"LOG_LEVEL"`
-	WebServerPort                     string `mapstructure:"WEB_SERVER_PORT"`
+	WebServerPort                     int    `mapstructure:"WEB_SERVER_PORT"`
 	RedisHost                         string `mapstructure:"REDIS_HOST"`
 	RedisPort                         int    `mapstructure:"REDIS_PORT"`
 	RedisPassword                     string `mapstructure:"REDIS_PASSWORD"`

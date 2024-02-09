@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -27,12 +28,12 @@ type WebServer struct {
 	Router        chi.Router
 	Handlers      []RouteHandler
 	Middlewares   []Middleware
-	WebServerPort string
+	WebServerPort int
 	Logger        zerolog.Logger
 }
 
 func NewWebServer(
-	serverPort string,
+	serverPort int,
 	logger zerolog.Logger,
 	handlers []RouteHandler,
 	middlewares []Middleware,
@@ -59,7 +60,7 @@ func (s *WebServer) Start() {
 		s.Router.MethodFunc(h.Method, h.Path, h.HandlerFunc)
 	}
 
-	s.Logger.Info().Msgf("Starting webserver on port %s", s.WebServerPort)
+	s.Logger.Info().Msgf("Starting webserver on port [%d]", s.WebServerPort)
 
-	http.ListenAndServe(s.WebServerPort, s.Router)
+	http.ListenAndServe(fmt.Sprintf(":%d", s.WebServerPort), s.Router)
 }
