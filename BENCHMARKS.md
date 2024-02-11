@@ -79,7 +79,7 @@ Teste com fim de validar se o serviço está respondendo corretamente sob press�
     - **Duração**: 30 minutos
 - Stage 3:
     - **Target**: 0 usuários
-    - **Duração**: 5 hora
+    - **Duração**: 5 minutos
 
 Comando para execução:
 
