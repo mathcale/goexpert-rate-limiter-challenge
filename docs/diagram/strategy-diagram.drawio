@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" modified="2024-02-16T01:45:28.615Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0" etag="1PrsrNHw05GOEOFszSIB" version="22.1.18" type="device">
+  <diagram name="Page-1" id="je4JciuDNC4xslCCIOiw">
+    <mxGraphModel dx="2110" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-27" value="" style="rounded=1;whiteSpace=wrap;html=1;arcSize=2;" vertex="1" parent="1">
+          <mxGeometry x="-40" y="-220" width="1260" height="540" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-2" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Interface&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;b&gt;LimiterStrategyInterface&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ Check(ctx context.Context, r *RateLimiterRequest): (*RateLimiterResult, error)&lt;br&gt;&lt;br&gt;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="10" y="40" width="450" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-4" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;text-decoration:underline;&quot;&gt;&lt;b&gt;RateLimiterRequest&lt;/b&gt;&lt;/p&gt;&lt;hr&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Key = string&lt;br&gt;+ Limit = int64&lt;br&gt;+ Duration = time.Time&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="-20" y="200" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-9" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;text-decoration:underline;&quot;&gt;&lt;b&gt;RateLimiterResult&lt;/b&gt;&lt;/p&gt;&lt;hr&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Result = Result&lt;br&gt;+ Limit = int64&lt;br&gt;+ Total = int64&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ Remaining = int64&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;+ ExpiresAt = time.Time&lt;br&gt;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="160" y="185" width="150" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;dashPattern=1 1;" edge="1" parent="1" source="z0rSGRvzy6F6Gbo0vvF8-11" target="z0rSGRvzy6F6Gbo0vvF8-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-11" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;text-decoration:underline;&quot;&gt;&lt;b&gt;Result:int&lt;/b&gt;&lt;/p&gt;&lt;hr&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;Allow = 1&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;Deny = -1&lt;br&gt;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="350" y="200" width="90" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="z0rSGRvzy6F6Gbo0vvF8-12" target="z0rSGRvzy6F6Gbo0vvF8-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-16" value="&lt;b&gt;Implements&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="z0rSGRvzy6F6Gbo0vvF8-15">
+          <mxGeometry x="-0.2143" relative="1" as="geometry">
+            <mxPoint x="-6" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="z0rSGRvzy6F6Gbo0vvF8-12" target="z0rSGRvzy6F6Gbo0vvF8-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-18" value="&lt;div&gt;&lt;b&gt;Read/write&lt;/b&gt;&lt;/div&gt;[redis.Client]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="z0rSGRvzy6F6Gbo0vvF8-17">
+          <mxGeometry x="-0.18" y="-1" relative="1" as="geometry">
+            <mxPoint x="13" y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-12" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;RedisLimiterStrategy&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- Client: *redis.Client&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- Logger: zerolog.Logger&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- Now: func() time.Time&lt;br&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ Check(ctx context.Context, r *RateLimiterRequest): (*RateLimiterResult, error)&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="570" y="25" width="440" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-14" value="Redis" style="shape=datastore;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="50" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="z0rSGRvzy6F6Gbo0vvF8-19" target="z0rSGRvzy6F6Gbo0vvF8-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-21" value="&lt;b&gt;Uses&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="z0rSGRvzy6F6Gbo0vvF8-20">
+          <mxGeometry x="-0.1692" y="2" relative="1" as="geometry">
+            <mxPoint x="-2" y="6" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-19" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;RateLimiter&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&amp;nbsp;- Logger: zerolog.Logger&lt;br&gt;&amp;nbsp;+ Strategy: LimiterStrategyInterface&lt;br&gt;&amp;nbsp;- MaxRequestsPerIP: int&lt;br&gt;&amp;nbsp;- MaxRequestsPerToken: int&lt;br&gt;&amp;nbsp;- TimeWindowMillis: int&lt;br&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ Check(ctx context.Context, r *http.Request) (*RateLimiterResult, error)&lt;br&gt;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="37.5" y="-190" width="395" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;dashPattern=1 1;" edge="1" parent="1" source="z0rSGRvzy6F6Gbo0vvF8-4" target="z0rSGRvzy6F6Gbo0vvF8-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z0rSGRvzy6F6Gbo0vvF8-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;dashPattern=1 1;" edge="1" parent="1" source="z0rSGRvzy6F6Gbo0vvF8-9" target="z0rSGRvzy6F6Gbo0vvF8-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

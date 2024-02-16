@@ -28,6 +28,8 @@ Neste caso, o rate limiter irá bloquear requisições que excedam o limite conf
 
 A estratégia de armazenamento é definida através de uma interface `LimiterStrategyInterface` que possui o método `Check` para obter e definir valores no _storage_. No momento, a aplicação possui apenas uma implementação para o Redis, mas é possível adicionar novas implementações para outros _storages_ como memória, banco de dados, etc, sem alterar a lógica de rate limiting, apenas injetando a nova implementação na instância de `RateLimiter` através do [gerenciador de dependências](internal/pkg/dependencyinjector/injector.go).
 
+![Strategy diagram](./docs/diagram/strategy-diagram.png)
+
 ## Benchmarks
 
 Foi utilizado o [Grafana k6](https://k6.io/) para realizar testes de carga do tipo [_smoke_](https://grafana.com/docs/k6/latest/testing-guides/test-types/smoke-testing/) e [_stress_](https://grafana.com/docs/k6/latest/testing-guides/test-types/stress-testing/) no serviço para avaliar o comportamento da solução desenvolvida. Os resultados se encontram [aqui](./BENCHMARKS.md).
