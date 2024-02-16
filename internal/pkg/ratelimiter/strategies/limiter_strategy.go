@@ -6,7 +6,6 @@ import (
 )
 
 type Result int
-type KeyType string
 
 const (
 	Allow Result = 1
