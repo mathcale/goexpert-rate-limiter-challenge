@@ -8,7 +8,7 @@ Implementação de um rate limiter em Go para um serviço Web capaz de limitar o
 
 A aplicação é composta por um servidor web que recebe requisições HTTP e um middleware de rate limiter que é responsável por controlar o número de requisições recebidas. O [middleware](internal/infra/web/middlewares/ratelimiter.go) intercepta todas as requisições e executa a lógica de rate limiting a partir da instância de [`RateLimiter`](internal/pkg/ratelimiter/limiter.go), o qual contém as regras de negócio do limitador e sabe invocar a _Strategy_ de armazenamento instanciada pelo [gerenciador de dependências](internal/pkg/dependencyinjector/injector.go) para realizar a checagem de limites.
 
-O rate limiter é configurável para realizar a checagem de limites por IP ou token `API_KEY`, e utiliza o Redis como _storage_ para armazenar a quantidade de requisições realizadas por cada IP e/ou token. Tal configuração é realizada através de variáveis de ambiente declaradas no arquivo `.env` e injetadas na aplicação através do [gerenciador de dependências], no boot da aplicação. As variáveis de ambiente são:
+O rate limiter é configurável para realizar a checagem de limites por IP ou token `API_KEY`, e utiliza o Redis como _storage_ para armazenar a quantidade de requisições realizadas por cada IP e/ou token. Tal configuração é realizada através de variáveis de ambiente declaradas no arquivo `.env` e injetadas na aplicação através do [gerenciador de dependências](internal/pkg/dependencyinjector/injector.go), no boot da aplicação. As variáveis de ambiente são:
 
 - `RATE_LIMITER_IP_MAX_REQUESTS`: Número máximo de requisições por IP
 - `RATE_LIMITER_TOKEN_MAX_REQUESTS`: Número máximo de requisições por token
@@ -23,6 +23,10 @@ RATE_LIMITER_TIME_WINDOW_MILISECONDS=300000
 ```
 
 Neste caso, o rate limiter irá bloquear requisições que excedam o limite configurado, retornando um status `429 Too Many Requests` e um corpo em JSON `{"message":"rate limit exceeded"}`, além de informar os cabeçalhos `X-Ratelimit-Limit`, `X-Ratelimit-Remaining` e `X-Ratelimit-Reset` com informações sobre o limite, quantidade restante e tempo de reset, respectivamente. Novas requisições que excedam o limite configurado serão bloqueadas até que o tempo de reset (5 minutos, no caso) seja atingido.
+
+### Estratégia de armazenamento
+
+A estratégia de armazenamento é definida através de uma interface `LimiterStrategyInterface` que possui o método `Check` para obter e definir valores no _storage_. No momento, a aplicação possui apenas uma implementação para o Redis, mas é possível adicionar novas implementações para outros _storages_ como memória, banco de dados, etc, sem alterar a lógica de rate limiting, apenas injetando a nova implementação na instância de `RateLimiter` através do [gerenciador de dependências](internal/pkg/dependencyinjector/injector.go).
 
 ## Benchmarks
 
